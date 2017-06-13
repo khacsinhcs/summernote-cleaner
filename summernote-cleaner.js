@@ -18,7 +18,7 @@
       keepHtml:true, //Remove all Html formats
       keepClasses:false, //Remove Classes
       badTags:['style','script','applet','embed','noframes','noscript','html','[v|w]:[a-z]+'], //Remove full tags with contents
-      badAttributes:['style','start','alt', 'width', 'height', 'class','id'] //Remove attributes from remaining tags
+      badAttributes:['style','start','alt', 'width', 'height', 'class','id', 'align'] //Remove attributes from remaining tags
     }
   });
   $.extend($.summernote.plugins,{
@@ -30,13 +30,13 @@
       var options=context.options;
       var lang=options.langInfo;
       var cleanText=function(txt,nlO){
-        console.log(txt);
         if(options.cleaner.keepHtml){
           var out=txt;
           if(!options.cleaner.keepClasses){
             var sS=/(\n|\r| class="[a-zA-Z0-9\s\-]+")/g;
             out=out.replace(sS,' ');
           }
+          out=out.replace(/<!--(.\(-->)*-->/g, '')
           var nL=/(\n)+/g;
           out=out.replace(nL,nlO);
           var cS=new RegExp('<!--(.*?)-->','gi');
@@ -94,8 +94,12 @@
             }else{
               var text=e.originalEvent.clipboardData.getData((options.cleaner.keepHtml?'text/html':'text/plain'));
             }
-            var text=cleanText(text,options.cleaner.newline);
-            $note.summernote('pasteHTML',text);
+            var newText=cleanText(text,options.cleaner.newline);
+            try {
+              $note.summernote('pasteHTML',newText);
+            } catch(err) {
+              $note.summernote('pasteHTML',text);
+            }
           }
         }
       }
