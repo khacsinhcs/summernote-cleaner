@@ -92,7 +92,10 @@
             if(msie>0||!!navigator.userAgent.match(/Trident.*rv\:11\./)){
               var text=window.clipboardData.getData("Text");
             }else{
-              var text=e.originalEvent.clipboardData.getData((options.cleaner.keepHtml?'text/html':'text/plain'));
+              var text=e.originalEvent.clipboardData.getData('text/html');
+              if (text === null || text == undefined || text.trim() === '') {
+                text = e.originalEvent.clipboardData.getData('text/plain');
+              }
             }
             var newText=cleanText(text,options.cleaner.newline);
             try {
